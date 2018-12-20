@@ -144,14 +144,7 @@ int main(int argc, char** argv)
 
 		if (count >= 75)
 			elem.ghost_elem_update(result);
-		// if (count == 80)
-		// {
-		// 	for(size_t t = 0;t < result.size();t++)
-		// 	{
-		// 		rectangle(fgimg,result[t],Scalar(255,0,0),2);
-		// 	}
-		// 	imwrite("resimg.png",fgimg);
-		// }
+		
 		cv::resize(frame_o,frame_o,Size(1000,750));
 		cv::resize(frame2,frame2,Size(1000,750));
 		//depth_map = dep.get_depth(frame_o,frame2);

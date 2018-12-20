@@ -327,26 +327,26 @@ Mat depthmap::update_depth(Mat bg_depth,vector<Rect> result,Mat frame,Mat frame2
     Mat depth_map;
     bg_depth.copyTo(depth_map);
     
-    //cv::resize(frame,frame,Size(1000,750));
-    //cv::resize(frame2,frame2,Size(1000,750));
+    cv::resize(frame,frame,Size(1000,750));
+    cv::resize(frame2,frame2,Size(1000,750));
     Mat all_depth = get_depth(frame,frame2);
-    //all_depth = all_depth * 4;
-    // cv::resize(all_depth,all_depth,Size(4000,3000));
-    // for(size_t i = 0; i <result.size();i++)
-    // {
-    //     Rect temp ;
-    //     temp.x = result[i].x * 2;
-	// 	temp.y = result[i].y * 2;
-	// 	temp.width = result[i].width * 2;
-	// 	temp.height = result[i].height * 2;
-    //     Mat temp_depth = all_depth(temp);
-    //     temp_depth.copyTo(depth_map(temp));
+    all_depth = all_depth * 4;
+    cv::resize(all_depth,all_depth,Size(4000,3000));
+    for(size_t i = 0; i <result.size();i++)
+    {
+        Rect temp ;
+        temp.x = result[i].x * 2;
+		temp.y = result[i].y * 2;
+	 	temp.width = result[i].width * 2;
+	 	temp.height = result[i].height * 2;
+         Mat temp_depth = all_depth(temp);
+         temp_depth.copyTo(depth_map(temp));
         
-    // }
+    }
     // double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
     // std::cout << "depth map all time : " << 1000/fps << std::endl;
-    //return depth_map;
-    return all_depth;
+    return depth_map;
+    //return all_depth;
 }
 
 
