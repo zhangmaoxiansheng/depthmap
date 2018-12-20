@@ -19,11 +19,12 @@
 using namespace std;
 using namespace cv;
 using namespace cv::cuda;
-
+//input : ./run_DE_INT test2.avi test2b.avi
+//output:   vector<Rect> result, Mat depth_map
 int main(int argc, char** argv)
 {
-	char *file = argv[1];
-	char *file2 = argv[2];
+	char *file = argv[1];//video input 1
+	char *file2 = argv[2];//video input 2
 	vector<Rect> result;
 	int count = 0;
 	bool useCamera = false;
@@ -95,13 +96,7 @@ int main(int argc, char** argv)
 
     
     depthmap dep(rpyrtype,nochannels,incoltype);
-	// Mat testframe1,testframe2;;
-	// cv::resize(frame,testframe1,Size(2000,1500));
-	// cv::resize(frame2,testframe2,Size(2000,1500));
-	//Mat bg_depth_small = dep.get_depth(testframe1,testframe2);
     bg_depth = dep.init_depth(frame,frame2);
-	//dep.SavePFMFile(bg_depth,"bg_depth.pfm");
-	cout<<"the bg size is:"<<bg_depth.size()<<endl;
     init1 = frame.clone();
     init2 = frame2.clone();
 
@@ -115,7 +110,7 @@ int main(int argc, char** argv)
 		cap2 >> frame2;
 		if (frame.empty())
 			break;
-		cv::resize(frame, frame, Size(2000, 1500));
+		cv::resize(frame, frame, Size(1000, 750));
 		d_frame.upload(frame);
 		int64 start = cv::getTickCount();
 
@@ -146,26 +141,26 @@ int main(int argc, char** argv)
 		if (count == 1)
             bg_old = bgimg;
 		result = elem.Find_location(fgmask);
-		
 
-		//cout<<"resultsize::"<<result.size()<<endl;
 		if (count >= 75)
 			elem.ghost_elem_update(result);
-		if (count == 80)
-		{
-			for(size_t t = 0;t < result.size();t++)
-			{
-				rectangle(fgimg,result[t],Scalar(255,0,0),2);
-			}
-			imwrite("resimg.png",fgimg);
-		}
-		
+		// if (count == 80)
+		// {
+		// 	for(size_t t = 0;t < result.size();t++)
+		// 	{
+		// 		rectangle(fgimg,result[t],Scalar(255,0,0),2);
+		// 	}
+		// 	imwrite("resimg.png",fgimg);
+		// }
+		cv::resize(frame_o,frame_o,Size(1000,750));
+		cv::resize(frame2,frame2,Size(1000,750));
+		//depth_map = dep.get_depth(frame_o,frame2);
     	depth_map = dep.update_depth(bg_depth,result,frame_o,frame2);
 		double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
-		std::cout << "FPS : " << fps << std::endl;
+		std::cout << "time : " << 1000/fps << std::endl;
 		cout<<"depth update done!"<<endl;
-		if (count == 80)
-			dep.SavePFMFile(depth_map,"depth_map.pfm");
+		// if (count == 80)
+		// 	dep.SavePFMFile(depth_map,"depth_map.pfm");
 //------------------------------------------repair the background
     	if(count == 75)
     	{
