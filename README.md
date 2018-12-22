@@ -10,6 +10,7 @@ Eigen3
 B:two for optical flow (`run_OF_*`) and two for depth from stereo (`run_DE_*`).
 For each problem, a fast variant operating on intensity images (`run_*_INT`) and 
 a slower variant operating on RGB images (`run_*_RGB`) is provided.
+
 A:only run_DE_RGB
 
 
