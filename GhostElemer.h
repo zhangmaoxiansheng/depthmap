@@ -15,20 +15,20 @@ public:
     int num;
     float time1;
     float time2;
-    vector< vector<Point> > record;
-    vector<int> table;
+    std::vector< vector<Point> > record;
+    std::vector<int> table;
     GhostElemer(float thr = 4,size_t sz = 5, int num_ = 4, float t1 = 1.1,float t2 = 1.2):thresh(thr),size(sz),num(num_),time1(t1),time2(t2){}
-    void ghost_dele(vector<Rect> &res_c);
-    void ghost_elem_update(vector<Rect> &res_c);
-    vector<Rect> Find_location(Mat img);
-    vector<Mat> Mat_res(vector<Rect> res_c,Mat frame,Mat frame2);
+    void ghost_dele(std::vector<cv::Rect> &res_c);
+    void ghost_elem_update(std::vector<cv::Rect> &res_c);
+    std::vector<Rect> Find_location(cv::Mat& img);
+    std::vector<cv::Mat> Mat_res(std::vector<cv::Rect> res_c,cv::Mat frame,cv::Mat frame2);
 private:
     bool ghost_range(Point a, Point b);
     void ghost_locate();
-    Point get_center(Rect r);
-    Rect Large_res(Rect r);
-    bool Rect_Intersect(Rect r1, Rect r2);
-    Rect Rect_Join(Rect r1, Rect r2);
-    vector<Point> get_all_center(vector<Rect> res_c);
+    cv::Point get_center(cv::Rect r);
+    cv::Rect Large_res(cv::Rect r);
+    bool Rect_Intersect(cv::Rect r1, cv::Rect r2);
+    cv::Rect Rect_Join(cv::Rect r1, cv::Rect r2);
+    std::vector<cv::Point> get_all_center(std::vector<cv::Rect> res_c);
 };
 #endif

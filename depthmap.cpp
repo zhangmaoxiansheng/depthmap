@@ -157,7 +157,7 @@ int depthmap::AutoFirstScaleSelect(int imgwidth, int fratio, int patchsize)
     return std::max(0,(int)std::floor(log2((2.0f*(float)imgwidth) / ((float)fratio * (float)patchsize))));
 }
 
-Mat depthmap::get_depth(Mat input1,Mat input2)
+Mat depthmap::get_depth(Mat& input1,Mat& input2)
 {
   if(incoltype == CV_LOAD_IMAGE_GRAYSCALE)
     {
@@ -241,94 +241,14 @@ Mat depthmap::get_depth(Mat input1,Mat input2)
 
   return flowout;
 }
-// Mat depthmap::get_depth(Mat input1,Mat input2)
-// {
-//     //int64 start = cv::getTickCount();
-//     if(incoltype == CV_LOAD_IMAGE_GRAYSCALE)
-//     {
-//         cvtColor(input1,input1,CV_BGR2GRAY);
-//         cvtColor(input2,input2,CV_BGR2GRAY);
-//     }
-//     Mat img_ao_mat = input1;
-//     Mat img_bo_mat = input2;
-//     Mat img_ao_fmat;
-//     Mat img_bo_fmat;
-//     cv::Size sz = img_ao_mat.size();
-//     int width_org = sz.width;
-//     int height_org = sz.height;
 
-//     int padw=0, padh=0;
-//     int scfct = pow(2,lv_f);
-//     int div = sz.width % scfct;
-//     if (div>0) padw = scfct - div;
-//     div = sz.height % scfct;
-//     if (div>0) padh = scfct - div;          
-//     if (padh>0 || padw>0)
-//     {
-//         cv::copyMakeBorder(img_ao_mat,img_ao_mat,floor((float)padh/2.0f),ceil((float)padh/2.0f),floor((float)padw/2.0f),ceil((float)padw/2.0f),cv::BORDER_REPLICATE);
-//         cv::copyMakeBorder(img_bo_mat,img_bo_mat,floor((float)padh/2.0f),ceil((float)padh/2.0f),floor((float)padw/2.0f),ceil((float)padw/2.0f),cv::BORDER_REPLICATE);
-//     }
-//     sz = img_ao_mat.size(); 
-//     img_ao_mat.convertTo(img_ao_fmat, CV_32F); // convert to float
-//     img_bo_mat.convertTo(img_bo_fmat, CV_32F);
-    
-    
-//     //cout<<"update success"<<endl;
-//     const float* img_ao_pyr[lv_f+1];
-//     const float* img_bo_pyr[lv_f+1];
-//     const float* img_ao_dx_pyr[lv_f+1];
-//     const float* img_ao_dy_pyr[lv_f+1];
-//     const float* img_bo_dx_pyr[lv_f+1];
-//     const float* img_bo_dy_pyr[lv_f+1];
-  
-//     cv::Mat img_ao_fmat_pyr[lv_f+1];
-//     cv::Mat img_bo_fmat_pyr[lv_f+1];
-//     cv::Mat img_ao_dx_fmat_pyr[lv_f+1];
-//     cv::Mat img_ao_dy_fmat_pyr[lv_f+1];
-//     cv::Mat img_bo_dx_fmat_pyr[lv_f+1];
-//     cv::Mat img_bo_dy_fmat_pyr[lv_f+1];
-  
-//     ConstructImgPyramide(img_ao_fmat, img_ao_fmat_pyr, img_ao_dx_fmat_pyr, img_ao_dy_fmat_pyr, img_ao_pyr, img_ao_dx_pyr, img_ao_dy_pyr, lv_f, lv_l, rpyrtype, 1, patchsz, padw, padh);
-//     ConstructImgPyramide(img_bo_fmat, img_bo_fmat_pyr, img_bo_dx_fmat_pyr, img_bo_dy_fmat_pyr, img_bo_pyr, img_bo_dx_pyr, img_bo_dy_pyr, lv_f, lv_l, rpyrtype, 1, patchsz, padw, padh);
-//     //cout<<"pyramid success"<<endl;
-//     // double fps1 = cv::getTickFrequency() / (cv::getTickCount() - start);
-//     // std::cout << "pyramid time : " << 1000/fps1 << std::endl;
-//     float sc_fct = pow(2,lv_l);
-//     cv::Mat flowout(sz.height / sc_fct , sz.width / sc_fct, CV_32FC1); // Depth   
-    
-//     OFC::OFClass ofc(img_ao_pyr, img_ao_dx_pyr, img_ao_dy_pyr, 
-//                     img_bo_pyr, img_bo_dx_pyr, img_bo_dy_pyr, 
-//                     patchsz,  // extra image padding to avoid border violation check
-//                     (float*)flowout.data,   // pointer to n-band output float array
-//                     nullptr,  // pointer to n-band input float array of size of first (coarsest) scale, pass as nullptr to disable
-//                     sz.width, sz.height, 
-//                     lv_f, lv_l, maxiter, miniter, mindprate, mindrrate, minimgerr, patchsz, poverl, 
-//                     usefbcon, costfct, nochannels, patnorm, 
-//                     usetvref, tv_alpha, tv_gamma, tv_delta, tv_innerit, tv_solverit, tv_sor,
-//                     verbosity);    
-//     //cout<<"flow success"<<endl;
-//   // *** Resize to original scale, if not run to finest level
-//     if (lv_l != 0)
-//     {
-//         flowout *= sc_fct;
-//         cv::resize(flowout, flowout, cv::Size(), sc_fct, sc_fct , cv::INTER_LINEAR);
-//     }
-  
-//     // If image was padded, remove padding before saving to file
-//     flowout = flowout(cv::Rect((int)floor((float)padw/2.0f),(int)floor((float)padh/2.0f),width_org,height_org));
-    
-//     return flowout;
-    
-// }
-Mat depthmap::update_depth(Mat bg_depth,vector<Rect> result,Mat frame,Mat frame2)
+Mat depthmap::update_depth(Mat& bg_depth,vector<Rect> result,Mat& frame,Mat& frame2)
 {
     //Mat depth_map = get_depth(frame,frame2);
     //int64 start = cv::getTickCount();
     Mat depth_map;
     bg_depth.copyTo(depth_map);
     
-    cv::resize(frame,frame,Size(1000,750));
-    cv::resize(frame2,frame2,Size(1000,750));
     Mat all_depth = get_depth(frame,frame2);
     all_depth = all_depth * 4;
     cv::resize(all_depth,all_depth,Size(4000,3000));
@@ -339,8 +259,8 @@ Mat depthmap::update_depth(Mat bg_depth,vector<Rect> result,Mat frame,Mat frame2
 		temp.y = result[i].y * 2;
 	 	temp.width = result[i].width * 2;
 	 	temp.height = result[i].height * 2;
-         Mat temp_depth = all_depth(temp);
-         temp_depth.copyTo(depth_map(temp));
+        Mat temp_depth = all_depth(temp);
+        temp_depth.copyTo(depth_map(temp));
         
     }
     // double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
@@ -349,84 +269,9 @@ Mat depthmap::update_depth(Mat bg_depth,vector<Rect> result,Mat frame,Mat frame2
     //return all_depth;
 }
 
-
-
-
-//     for(size_t i = 0; i < result.size();i++)
-// 	    {
-
-//             Rect temp;
-//             Rect temp_lar;
-// 		    temp.x = result[i].x * 2;
-// 		    temp.y = result[i].y * 2;
-// 		    temp.width = result[i].width * 2;
-// 		    temp.height = result[i].height * 2;
-//             //if(temp.size == cv::Size(354,48))
-//             if(temp.y < 0)
-//             {
-//                 temp.height = temp.height + temp.y;
-//                 temp.y = 0;
-//             }
-//             if(temp.x < 0)
-//             {
-//                 temp.width = temp.width + temp.x;
-//                 temp.x = 0;
-//             }
-//             if(temp.x+temp.width > frame.cols)
-//                 temp.width = frame.cols - temp.x;
-//             if(temp.y+temp.height > frame.rows)
-//                 temp.height = frame.rows - temp.y;
-//             //cout<<"temp size"<<temp.size()<<endl;
-// 		    double minval = 0;
-//             Mat temp_ground = bg_depth(temp);
-//             cv::minMaxLoc(temp_ground,&minval,NULL);
-//             int maxval = int(-minval);
-//             //cout<<"max disp ="<<maxval<<endl;
-//             temp_lar.width = temp.width + 4*maxval;
-//             temp_lar.x = temp.x - 2*maxval;
-//             temp_lar.y = temp.y - 1*maxval;
-//             temp_lar.height = temp.height + 2*maxval;
-//             if(temp_lar.x < 0)
-//             {
-//                 temp_lar.width = temp_lar.width + temp_lar.x;
-//                 temp_lar.x = 0;
-//             }
-//             if(temp_lar.x+temp_lar.width > frame.cols)
-//                 temp_lar.width = frame.cols - temp_lar.x;
-//             if(temp_lar.y < 0)
-//             {
-//                 temp_lar.height = temp_lar.height + temp_lar.y;
-//                 temp_lar.y = 0;
-//             }
-//             if(temp_lar.y+temp_lar.height > frame.rows)
-//                 temp_lar.height = frame.rows - temp_lar.y;
-//             Mat temp_mat = frame(temp_lar);
-// 		    Mat temp_mat2 = frame2(temp_lar);
-//             //cv::imwrite("/home/z/2.png",temp_mat);
-//             //cv::imwrite("/home/z/1.png",temp_mat2);
-//             cout<<temp_mat.size()<<endl;
-//             //cout<<"copy done!"<<endl;
-//             int64 start = cv::getTickCount();
-//             Mat temp_depth = get_depth(temp_mat,temp_mat2);
-//             double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
-// 		    std::cout << "depth map FPS : " << fps << std::endl;
-//             Rect final_rect;
-//             final_rect.x = 2*maxval;
-//             final_rect.width = temp.width;
-//             final_rect.y = 1*maxval;
-//             final_rect.height = temp.height;
-//             temp_depth = temp_depth(final_rect);
-            
-//         //bg_depth(temp) = temp_depth; 
-//             if(temp_depth.size() == temp.size())
-//                 temp_depth.copyTo(depth_map(temp));
-//             else
-//                 cout<<"the size is wrong"<<endl;
-            
-// 	    }
-//     return depth_map;
-// }
-Mat depthmap::init_depth(Mat init1,Mat init2)
+Mat depthmap::init_depth(Mat& init1,Mat& init2)
 {
+    cv::resize(init1,init1,Size(1000,750));
+    cv::resize(init2,init2,Size(1000,750));
     return get_depth(init1,init2);
 }

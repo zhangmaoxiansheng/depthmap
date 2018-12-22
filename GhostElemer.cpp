@@ -125,7 +125,7 @@ Rect GhostElemer::Rect_Join(Rect r1, Rect r2)
 	join.height = max((r1.y + r1.height), (r2.y + r2.height)) - join.y;
 	return join;
 }
-vector<Rect> GhostElemer::Find_location(Mat img)
+vector<Rect> GhostElemer::Find_location(Mat& img)
 {
 	vector<Rect> res_c;
 	vector<vector<Point> > contours;
@@ -134,7 +134,7 @@ vector<Rect> GhostElemer::Find_location(Mat img)
 	for (size_t i = 0; i < contours.size(); i++)
 	{
 		boundRect[i] = Large_res(cv::boundingRect(contours[i]));//1.2
-		if (boundRect[i].area() > 1500)
+		if (boundRect[i].area() > 500)
 		{
 			res_c.push_back(boundRect[i]);
 			for (size_t ii = 0; ii < res_c.size() - 1; ii++)
@@ -149,6 +149,11 @@ vector<Rect> GhostElemer::Find_location(Mat img)
 				}
 			}
 		}
+	}
+	img = cv::Mat::zeros(img.size(),CV_8UC1);//日后优化
+	for(size_t j = 0; j < res_c.size();j++)
+	{
+		cv::rectangle(img,res_c[j],Scalar(255,255,255),-1);
 	}
 	return res_c;
 }
