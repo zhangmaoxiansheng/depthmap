@@ -6,11 +6,15 @@ opencv 3.4.0
 cuda 9.1
 Eigen3
 
-Two for optical flow (`run_OF_*`) and two for depth from stereo (`run_DE_*`).
+
+B:two for optical flow (`run_OF_*`) and two for depth from stereo (`run_DE_*`).
 For each problem, a fast variant operating on intensity images (`run_*_INT`) and 
 a slower variant operating on RGB images (`run_*_RGB`) is provided.
+A:only run_DE_RGB
+
 
 ```
+cd A(B)
 mkdir build
 cd build
 cmake ../
@@ -26,7 +30,8 @@ test video : test2.avi test2b.avi
 
 ./run_DE_INT test2.avi test2b.avi
 
-output: depth_map, vector<Rect>result
+output: A:background image,background depth
+	B:mask,img_mask,depth_mask
 
 Parameters:(can be changed in depthmap.cpp)
 ```
