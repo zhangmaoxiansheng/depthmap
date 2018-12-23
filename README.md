@@ -2,8 +2,8 @@
 ## Compiling ##
 Environment:
 Linux
-opencv 3.4.0
-cuda 9.1
+opencv 4.0.0
+cuda 10
 Eigen3
 
 
@@ -32,7 +32,7 @@ test video : test2.avi test2b.avi
 ./run_DE_INT test2.avi test2b.avi
 
 output: A:background image,background depth
-	B:mask,img_mask,depth_mask
+	B:mask,depth_mask
 
 Parameters:(can be changed in depthmap.cpp)
 ```

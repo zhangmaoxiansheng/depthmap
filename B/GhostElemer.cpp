@@ -129,7 +129,7 @@ vector<Rect> GhostElemer::Find_location(Mat& img)
 {
 	vector<Rect> res_c;
 	vector<vector<Point> > contours;
-	cv::findContours(img, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	cv::findContours(img, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 	vector<Rect> boundRect(contours.size());
 	for (size_t i = 0; i < contours.size(); i++)
 	{

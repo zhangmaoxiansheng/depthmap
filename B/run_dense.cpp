@@ -50,7 +50,6 @@ int main(int argc, char** argv)
 	GpuMat d_fgmask;
 	Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter(CV_8UC1, CV_8UC1, Size(5,5), 0);
     Mat fgmask;
-	Mat fgimg;
     Mat bg_depth;
     Mat depth_map;
 	Mat depth_mask;
@@ -59,11 +58,11 @@ int main(int argc, char** argv)
     int rpyrtype, nochannels, incoltype;
     //different version
     #if (SELECTCHANNEL==1 | SELECTCHANNEL==2) // use Intensity or Gradient image      
-    incoltype = CV_LOAD_IMAGE_GRAYSCALE;        
+    incoltype = IMREAD_GRAYSCALE;      
     rpyrtype = CV_32FC1;
     nochannels = 1;
     #elif (SELECTCHANNEL==3) // use RGB image
-    incoltype = CV_LOAD_IMAGE_COLOR;
+    incoltype = IMREAD_COLOR;
     rpyrtype = CV_32FC3;
     nochannels = 3;      
     #endif
@@ -93,8 +92,7 @@ int main(int argc, char** argv)
 		d_fgmask.download(fgmask);
 		result = elem.Find_location(fgmask);//get vector<Rect> and mask
 		depth_map = dep.get_depth(frame,frame2);
-		frame.copyTo(fgimg,fgmask);//output 1 maskimg
-		depth_map.copyTo(depth_mask,fgmask);//output 2 maskdepth
+		depth_mask = dep.update_depth_robust(depth_map,fgmask);
 		double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
 		std::cout << "time : " << 1000/fps << std::endl;
 		cout<<"depth update done!"<<endl;

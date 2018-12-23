@@ -159,11 +159,6 @@ int depthmap::AutoFirstScaleSelect(int imgwidth, int fratio, int patchsize)
 
 Mat depthmap::get_depth(Mat& input1,Mat& input2)
 {
-  if(incoltype == CV_LOAD_IMAGE_GRAYSCALE)
-    {
-      cvtColor(input1,input1,CV_BGR2GRAY);
-      cvtColor(input2,input2,CV_BGR2GRAY);
-    } 
   
   cv::Mat img_ao_mat = input1; // Read the file
   cv::Mat img_bo_mat = input2;   // Read the file
@@ -269,11 +264,6 @@ Mat depthmap::update_depth(Mat& bg_depth,vector<Rect> result,Mat& frame,Mat& fra
 
 Mat depthmap::init_depth(Mat& input1,Mat& input2)
 {
-    if(incoltype == CV_LOAD_IMAGE_GRAYSCALE)
-    {
-      cvtColor(input1,input1,CV_BGR2GRAY);
-      cvtColor(input2,input2,CV_BGR2GRAY);
-    } 
   
   cv::Mat img_ao_mat = input1; // Read the file
   cv::Mat img_bo_mat = input2;   // Read the file

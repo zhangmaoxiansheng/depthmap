@@ -16,7 +16,8 @@ public:
     int rpyrtype,nochannels,incoltype;
     depthmap(int rpyrtype,int nochannels,int incoltype);
     cv::Mat get_depth(cv::Mat& input1,cv::Mat& input2);
-    cv::Mat update_depth(cv::Mat& bg_depth,std::vector<cv::Rect> result,cv::Mat& frame,cv::Mat& frame2);
+    //cv::Mat update_depth(cv::Mat& bg_depth,std::vector<cv::Rect> result,cv::Mat& frame,cv::Mat& frame2);
+    cv::Mat update_depth_robust(cv::Mat& depth_map,cv::Mat mask); 
     cv::Mat init_depth(cv::Mat& init1,cv::Mat& init2);
     void SavePFMFile(cv::Mat& img, const char* filename);
     void SaveFlowFile(cv::Mat& img, const char* filename);

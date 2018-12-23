@@ -55,8 +55,7 @@ int main(int argc, char** argv)
     Mat bg_depth;
     //------------------------------------------------------------parpare for DIS-----------------------------------------------------------
     int rpyrtype, nochannels, incoltype;
-    //different version
-    incoltype = CV_LOAD_IMAGE_COLOR;
+    incoltype = IMREAD_COLOR;
     rpyrtype = CV_32FC3;
     nochannels = 3;      
   // *** Parse rest of parameters, See oflow.h for definitions.
@@ -94,8 +93,6 @@ int main(int argc, char** argv)
 			break;
 		
 	}
-	
-	
 	bg_depth = dep.init_depth(bgimg,bgimg2);
 	imshow("bg1",bgimg);
 	imshow("bg2",bgimg2);
