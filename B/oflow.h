@@ -4,8 +4,8 @@
 #ifndef OFC_HEADER
 #define OFC_HEADER
 
-using std::cout;
-using std::endl;
+// using std::cout;
+// using std::endl;
 
 namespace OFC
 {

@@ -24,7 +24,20 @@ public:
     //void update_mat(Mat input1,Mat input2);
 
 private:
-    void ConstructImgPyramide(const cv::Mat & img_ao_fmat, cv::Mat * img_ao_fmat_pyr, cv::Mat * img_ao_dx_fmat_pyr, cv::Mat * img_ao_dy_fmat_pyr, const float ** img_ao_pyr, const float ** img_ao_dx_pyr, const float ** img_ao_dy_pyr, const int lv_f, const int lv_l, const int rpyrtype, const bool getgrad, const int imgpadding, const int padw, const int padh);
+    void ConstructImgPyramide(const cv::Mat & img_ao_fmat,
+        cv::Mat * img_ao_fmat_pyr,
+        cv::Mat * img_ao_dx_fmat_pyr,
+        cv::Mat * img_ao_dy_fmat_pyr,
+        const float ** img_ao_pyr,
+        const float ** img_ao_dx_pyr, 
+        const float ** img_ao_dy_pyr, 
+        const int lv_f, 
+        const int lv_l, 
+        const int rpyrtype, 
+        const bool getgrad, 
+        const int imgpadding, 
+        const int padw, 
+        const int padh);
     int AutoFirstScaleSelect(int imgwidth, int fratio, int patchsize);
 
 };
