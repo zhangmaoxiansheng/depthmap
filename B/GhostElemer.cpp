@@ -134,7 +134,7 @@ vector<Rect> GhostElemer::Find_location(Mat& img)
 	for (size_t i = 0; i < contours.size(); i++)
 	{
 		boundRect[i] = Large_res(cv::boundingRect(contours[i]));//1.2
-		if (boundRect[i].area() > 500)
+		if (boundRect[i].area() > Area)
 		{
 			res_c.push_back(boundRect[i]);
 			for (size_t ii = 0; ii < res_c.size() - 1; ii++)
@@ -157,6 +157,23 @@ vector<Rect> GhostElemer::Find_location(Mat& img)
 	}
 	return res_c;
 }
+cv::Mat GhostElemer::refine_mask(cv::Mat frame_init,cv::Mat frame,cv::Mat mask)
+{
+	//frames gray scale
+	Mat mask_init;
+	frame_init.copyTo(mask_init,mask);
+	Mat mask_current;
+	frame.copyTo(mask_current,mask);
+	Mat diff;
+	cv::absdiff(mask_init,mask_current,diff);
+	cv::threshold(diff,diff, 15, 255.0, cv::THRESH_BINARY);
+	Mat element=cv::getStructuringElement(MORPH_RECT,Size(3,3));
+	cv::dilate(diff,diff,element);
+	cv::erode(diff,diff,element);
+	return diff;	
+	
+}
+
 vector<Mat> GhostElemer::Mat_res(vector<Rect> res_c,Mat frame,Mat frame2)
 {
 	vector<Mat> Mat_res;

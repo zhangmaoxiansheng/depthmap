@@ -74,8 +74,12 @@ int main(int argc, char** argv)
     }
     depthmap dep(rpyrtype,nochannels,incoltype);
     bg_depth = dep.init_depth(frame,frame2);//should use the output of A stage,just test
+	Mat frame_init = frame.clone();
+	//cout<<frame_init.type()<<endl;
 	// MOG:
 	mog->apply(d_frame, d_fgmask, 0.01);
+	int count = 0;
+	Mat diff_mask;
 	for (;;)
 	{
 		cap >> frame;
@@ -84,6 +88,7 @@ int main(int argc, char** argv)
 			break;
 		cv::resize(frame, frame, Size(1000, 750));
 		cv::resize(frame2,frame2,Size(1000,750));
+		//frame_o = frame.clone();
 		d_frame.upload(frame);
 		int64 start = cv::getTickCount();
 		//update the model
@@ -92,11 +97,15 @@ int main(int argc, char** argv)
 		d_fgmask.download(fgmask);
 		result = elem.Find_location(fgmask);//get vector<Rect> and mask
 		depth_map = dep.get_depth(frame,frame2);
-		depth_mask = dep.update_depth_robust(depth_map,fgmask);
+		//refine the mask
+		diff_mask = elem.refine_mask(frame_init,frame,fgmask);
+		depth_mask = dep.update_depth_robust(depth_map,diff_mask);
+		//depth_mask = dep.update_depth_robust(depth_map,fgmask);
 		double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
 		std::cout << "time : " << 1000/fps << std::endl;
 		cout<<"depth update done!"<<endl;
 		result.clear();
+		count = count + 1;
 		int key = waitKey(10);
 		if (key == 27)
 			break;
