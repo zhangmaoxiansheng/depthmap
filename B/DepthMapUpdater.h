@@ -36,13 +36,26 @@ public:
     ~DepthMapUpdater(){};
     /**
 	@brief init updater with background infomation
-	@param cv::Mat& masterBackground: A Pano Render Camera
-	@param cv::Mat& slaveBackground: texture width
-	@param cv::Mat& depthBackground: texture height
+	@param cv::Mat& masterBackground: master camera background image
+	@param cv::Mat& slaveBackground: slave camera background image
+	@param cv::Mat& depthBackground: initial background depth image
 	@return int(0)
 	*/
     int init(cv::Mat& masterBackground, cv::Mat& slaveBackground, cv::Mat& depthBackground);
+
+    /**
+	@brief update depth image with mask
+	@param cv::Mat& masterMat: input master camera image
+	@param cv::Mat& slaveMat: input slave camera image
+	@param cv::Mat& depthWithMask: updated depth image with mask
+	@return int(0)
+	*/
     int update(cv::Mat& masterMat, cv::Mat& slaveMat, cv::Mat& depthWithMask);
+
+    /**
+	@brief get how many pairs have been inputted
+	@return frame count
+	*/
     int getFrameCount();
 private:
     int frameCount = 0;
