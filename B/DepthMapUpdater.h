@@ -49,7 +49,14 @@ private:
     cv::Ptr<cv::BackgroundSubtractor> mog;
     cv::Ptr<cv::cuda::Filter> gauss
     GhostElemer elem;
-    depthmap dep(rpyrtype,nochannels,incoltype);
+
+#if (SELECTCHANNEL==1 | SELECTCHANNEL==2) // use Intensity or Gradient image    
+    depthmap dep(CV_32FC1,1,IMREAD_GRAYSCALE);
+#elif (SELECTCHANNEL==3) // use RGB image
+    depthmap dep(CV_32FC3,3,IMREAD_COLOR);    
+#endif
+
+    
 };
 
 #endif //__DEPTH_MAP_UPDATER__
