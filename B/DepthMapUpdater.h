@@ -70,7 +70,7 @@ private:
 	cv::Mat _backMaster, _backSlave, _backDepth;
 	cv::cuda::GpuMat _gpu_backMaster, _gpu_backSlave, _gpu_backDepth;
 
-	cv::Mat _mask;
+	cv::Mat _mask,_depth;
 	cv::cuda::GpuMat _gpu_mask;
 };
 
