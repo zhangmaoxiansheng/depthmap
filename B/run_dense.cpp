@@ -44,7 +44,9 @@ int main(int argc, char** argv)
 	Mat frame;
 	Mat frame2;
 	cap >> frame;
-	cap2 >> frame2; //TODO resize needed
+	cap2 >> frame2; 
+	cv::resize(frame, frame, Size(1000, 750));
+	cv::resize(frame2,frame2,Size(1000,750));
 	GpuMat d_frame(frame);
 	Ptr<BackgroundSubtractor> mog = cuda::createBackgroundSubtractorMOG(70);
 	GpuMat d_fgmask;
