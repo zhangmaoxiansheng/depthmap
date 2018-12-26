@@ -4,6 +4,15 @@ project (FastPatchOF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wno-unknown-pragmas -Wall -std=c++11 -msse4")  #-Wall
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wno-unknown-pragmas -Wall -msse4")  #-Wall
 
+if ( WIN32 )
+    set (WIN_LIB_PATH "E:/libs")
+	set(OpenCV_DIR ${WIN_LIB_PATH}/OpenCV/x64/vc14/lib)
+    set(OpenCV_CONFIG_PATH ${WIN_LIB_PATH}/OpenCV)
+    set(Eigen3_DIR ${WIN_LIB_PATH}/Eigen/share/eigen3/cmake)
+    set(EIGEN_INCLUDE_DIR ${WIN_LIB_PATH}/Eigen/include/eigen3)
+endif()
+
+
 FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Eigen3 REQUIRED) 
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -22,6 +31,9 @@ include_directories(${CUDA_INCLUDE_DIRS})
 
 
 set(CODEFILES run_dense.cpp oflow.cpp patch.cpp patchgrid.cpp refine_variational.cpp FDF1.0.1/image.c FDF1.0.1/opticalflow_aux.c FDF1.0.1/solver.c depthmap.cpp GhostElemer.cpp)
+if ( WIN32 )
+    set(CODEFILES ${CODEFILES} depthmap.h DepthMapUpdater.h GhostElemer.h oflow.h patch.h patchgrid.h refine_variational.h DepthMapUpdater.cpp)
+endif()
 
 # GrayScale, Optical Flow
 add_executable (run_OF_INT ${CODEFILES})

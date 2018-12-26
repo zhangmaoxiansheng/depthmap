@@ -13,7 +13,7 @@ public:
     bool usefbcon, usetvref;
     char* outfile;
     int rpyrtype,nochannels,incoltype;
-    depthmap(int rpyrtype,int nochannels,int incoltype);
+	depthmap(int rpyrtype = CV_32FC1, int nochannels = 1, int incoltype = cv::IMREAD_GRAYSCALE);
     cv::Mat get_depth(cv::Mat& input1,cv::Mat& input2);
     //cv::Mat update_depth(cv::Mat& bg_depth,std::vector<cv::Rect> result,cv::Mat& frame,cv::Mat& frame2);
     cv::Mat update_depth_robust(cv::Mat& depth_map,cv::Mat mask); 

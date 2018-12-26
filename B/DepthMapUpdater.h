@@ -29,6 +29,9 @@ class for depth map update
 #define SELECTMODE 2
 #define SELECTCHANNEL 1
 
+#define JIANING_WIDTH 1000
+#define JIANING_HEIGHT 750
+
 class DepthMapUpdater
 {
 public:
@@ -58,18 +61,17 @@ public:
 	*/
     int getFrameCount();
 private:
-    int frameCount = 0;
-    cv::Ptr<cv::BackgroundSubtractor> mog;
-    cv::Ptr<cv::cuda::Filter> gauss
-    GhostElemer elem;
+    int _frameCount = 0;
+    cv::Ptr<cv::BackgroundSubtractor> _mog;
+	cv::Ptr<cv::cuda::Filter> _gauss;
+    GhostElemer _elem;
+	depthmap _dep;
 
-#if (SELECTCHANNEL==1 | SELECTCHANNEL==2) // use Intensity or Gradient image    
-    depthmap dep(CV_32FC1,1,IMREAD_GRAYSCALE);
-#elif (SELECTCHANNEL==3) // use RGB image
-    depthmap dep(CV_32FC3,3,IMREAD_COLOR);    
-#endif
+	cv::Mat _backMaster, _backSlave, _backDepth;
+	cv::cuda::GpuMat _gpu_backMaster, _gpu_backSlave, _gpu_backDepth;
 
-    
+	cv::Mat _mask;
+	cv::cuda::GpuMat _gpu_mask;
 };
 
 #endif //__DEPTH_MAP_UPDATER__
