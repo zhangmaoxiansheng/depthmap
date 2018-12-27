@@ -98,11 +98,11 @@ int main(int argc, char** argv)
 		gauss->apply(d_fgmask, d_fgmask);
 		d_fgmask.download(fgmask);
 		result = elem.Find_location(fgmask);//get vector<Rect> and mask
-		depth_map = dep.get_depth(frame,frame2);
+		depth_map = dep.get_depth(frame,frame2);//abs
 		//refine the mask
 		diff_mask = elem.refine_mask(frame_init,frame,fgmask);
 		depth_mask = dep.update_depth_robust(depth_map,diff_mask);
-		//depth_mask = dep.update_depth_robust(depth_map,fgmask);
+		dep.refine_depth(depth_mask,diff_mask,result,frame,frame2);//refine the depth and mask
 		double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
 		std::cout << "time : " << 1000/fps << std::endl;
 		cout<<"depth update done!"<<endl;

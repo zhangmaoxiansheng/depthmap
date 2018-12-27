@@ -106,6 +106,7 @@ Rect GhostElemer::Large_res(Rect r)
 		n.width = r.width*time2;
 		n.height = r.height*time2;
 	}
+	
 	return n;
 }
 bool GhostElemer::Rect_Intersect(Rect r1, Rect r2)
@@ -118,12 +119,13 @@ bool GhostElemer::Rect_Intersect(Rect r1, Rect r2)
 }
 Rect GhostElemer::Rect_Join(Rect r1, Rect r2)
 {
-	Rect join;
-	join.x = min(r1.x, r2.x);
-	join.y = min(r1.y, r2.y);
-	join.width = max((r1.x + r1.width), (r2.x + r2.width)) - join.x;
-	join.height = max((r1.y + r1.height), (r2.y + r2.height)) - join.y;
-	return join;
+	Rect join1;
+	join1.x = min(r1.x, r2.x);
+	join1.y = min(r1.y, r2.y);
+	join1.width = max((r1.x + r1.width), (r2.x + r2.width)) - join1.x;
+	join1.height = max((r1.y + r1.height), (r2.y + r2.height)) - join1.y;
+	
+	return join1;
 }
 vector<Rect> GhostElemer::Find_location(Mat& img)
 {
@@ -153,6 +155,22 @@ vector<Rect> GhostElemer::Find_location(Mat& img)
 	img = cv::Mat::zeros(img.size(),CV_8UC1);//日后优化
 	for(size_t j = 0; j < res_c.size();j++)
 	{
+		if(res_c[j].x < 0)
+    	{
+        	res_c[j].width = res_c[j].width + res_c[j].x;
+        	res_c[j].x = 0;
+    	}
+    	if(res_c[j].x+res_c[j].width > img.cols)
+        	res_c[j].width = img.cols - res_c[j].x;
+    	if(res_c[j].y < 0)
+    	{
+        	res_c[j].height = res_c[j].height + res_c[j].y;
+        	res_c[j].y = 0;
+    	}
+    	if(res_c[j].y+res_c[j].height > img.rows)
+        {
+			res_c[j].height = img.rows - res_c[j].y;
+		}
 		cv::rectangle(img,res_c[j],Scalar(255,255,255),-1);
 	}
 	return res_c;

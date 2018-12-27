@@ -19,8 +19,20 @@ public:
     GhostElemer(float thr = 4,size_t sz = 5, int num_ = 4, float t1 = 1.1,float t2 = 1.2):thresh(thr),size(sz),num(num_),time1(t1),time2(t2){}
     void ghost_dele(std::vector<cv::Rect> &res_c);
     void ghost_elem_update(std::vector<cv::Rect> &res_c);
+    /**
+    @brief get the location(rectangle) of the target
+    @param cv::Mat&img foreground image
+    @return std::vector<cv::Rect> vector of the result rect, also the rectangle mask is getted (img)
+    */
     std::vector<cv::Rect> Find_location(cv::Mat& img);
     std::vector<cv::Mat> Mat_res(std::vector<cv::Rect> res_c,cv::Mat frame,cv::Mat frame2);
+    /**
+    @brief refine the mask, instead of rectangle, is the shape of the target
+    @param cv::Mat frame_init the background
+    @param cv::Mat frame current frame
+    @param cv::Mat mask;
+    @return cv::Mat refined mask
+    */
     cv::Mat refine_mask(cv::Mat frame_init,cv::Mat frame,cv::Mat mask);
 private:
     bool ghost_range(cv::Point a, cv::Point b);
