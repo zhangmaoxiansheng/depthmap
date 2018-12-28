@@ -55,6 +55,15 @@ public:
 	*/
     int update(cv::Mat& masterMat, cv::Mat& slaveMat, cv::Mat& depthWithMask);
 
+	/**
+	@brief update depth image with mask
+	@param cv::cuda::GpuMat& masterMat: input master camera image
+	@param cv::cuda::GpuMat& slaveMat: input slave camera image
+	@param cv::cuda::GpuMat& depthWithMask: updated depth image with mask
+	@return int(0)
+	*/
+    int update(cv::cuda::GpuMat& masterMat, cv::cuda::GpuMat& slaveMat, cv::Mat& depthWithMask);
+
     /**
 	@brief get how many pairs have been inputted
 	@return frame count
