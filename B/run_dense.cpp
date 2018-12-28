@@ -16,6 +16,8 @@
 #include "oflow.h"
 #include "GhostElemer.h"
 
+#define filp 1
+
 using namespace std;
 using namespace cv;
 using namespace cv::cuda;
@@ -47,7 +49,8 @@ int main(int argc, char** argv)
 	cap2 >> frame2; 
 	cv::resize(frame, frame, Size(1000, 750));
 	cv::resize(frame2,frame2,Size(1000,750));
-	GpuMat d_frame(frame);
+
+	
 	Ptr<BackgroundSubtractor> mog = cuda::createBackgroundSubtractorMOG(70);
 	GpuMat d_fgmask;
 	Ptr<cv::cuda::Filter> gauss = cv::cuda::createGaussianFilter(CV_8UC1, CV_8UC1, Size(5,5), 0);
@@ -75,7 +78,13 @@ int main(int argc, char** argv)
         return -1;
     }
     depthmap dep(rpyrtype,nochannels,incoltype);
-    bg_depth = dep.init_depth(frame,frame2);//should use the output of A stage,just test
+    if(flip)
+	{
+		dep.flip(frame);
+		dep.flip(frame2);
+	}
+	GpuMat d_frame(frame);
+	bg_depth = dep.init_depth(frame,frame2);//should use the output of A stage,just test
 	Mat frame_init = frame.clone();
 	//cout<<frame_init.type()<<endl;
 	// MOG:
@@ -90,6 +99,11 @@ int main(int argc, char** argv)
 			break;
 		cv::resize(frame, frame, Size(1000, 750));
 		cv::resize(frame2,frame2,Size(1000,750));
+		if(flip)
+		{
+			dep.flip(frame);
+			dep.flip(frame2);
+		}
 		//frame_o = frame.clone();
 		d_frame.upload(frame);
 		int64 start = cv::getTickCount();
@@ -98,11 +112,17 @@ int main(int argc, char** argv)
 		gauss->apply(d_fgmask, d_fgmask);
 		d_fgmask.download(fgmask);
 		result = elem.Find_location(fgmask);//get vector<Rect> and mask
-		depth_map = dep.get_depth(frame,frame2);//abs
+		
+		depth_map = dep.get_depth(frame,frame2);
 		//refine the mask
 		diff_mask = elem.refine_mask(frame_init,frame,fgmask);
 		depth_mask = dep.update_depth_robust(depth_map,diff_mask);
-		dep.refine_depth(depth_mask,diff_mask,result,frame,frame2);//refine the depth and mask
+		dep.refine_depth(depth_mask,diff_mask,result,frame,frame2);//refine the depth and mask,abs here
+		if(flip)
+		{
+			dep.flip_back(diff_mask);
+			dep.flip_back(depth_mask);
+		}
 		double fps = cv::getTickFrequency() / (cv::getTickCount() - start);
 		std::cout << "time : " << 1000/fps << std::endl;
 		cout<<"depth update done!"<<endl;

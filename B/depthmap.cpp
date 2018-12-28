@@ -38,6 +38,18 @@ depthmap::depthmap(int rpyrtypei,int nochannelsi,int incoltypei)
     verbosity = 0;
 
 }
+void depthmap::filp(Mat& m)
+{
+    cv::transpose(m,m);
+    cv::flip(m,m,1);
+
+}
+void depthmap::filp_back(Mat& m)
+{
+    cv::transpose(m,m);
+    cv::flip(m,m,0);
+    
+}
 void depthmap::ConstructImgPyramide(const cv::Mat & img_ao_fmat, cv::Mat * img_ao_fmat_pyr, cv::Mat * img_ao_dx_fmat_pyr, cv::Mat * img_ao_dy_fmat_pyr, const float ** img_ao_pyr, const float ** img_ao_dx_pyr, const float ** img_ao_dy_pyr, const int lv_f, const int lv_l, const int rpyrtype, const bool getgrad, const int imgpadding, const int padw, const int padh)
 {
     for (int i=0; i<=lv_f; ++i)  // Construct image and gradient pyramides
@@ -238,7 +250,7 @@ Mat depthmap::get_depth(Mat& input1,Mat& input2)
   
   // If image was padded, remove padding before saving to file
   flowout = flowout(cv::Rect((int)floor((float)padw/2.0f),(int)floor((float)padh/2.0f),width_org,height_org));
-  flowout = cv::abs(flowout);
+  //flowout = cv::abs(flowout);
   return flowout;
 }
 
@@ -269,7 +281,14 @@ int depthmap::pattern_match(int x_forward,Mat temp,Mat temp_area)
 }
 void depthmap::refine_depth(Mat& mask_depth,Mat& mask,vector<Rect> result,Mat& frame,Mat& frame2)
 {
-    
+    int flag = 1;
+    double min;double max;
+    minMaxLoc(mask_depth,&min,&max);
+    if(min < 0)
+    {    
+        flag = -1;
+        mask_depth = cv::abs(mask_depth);
+    }
     for(size_t i = 0;i < result.size();i++)
     {
         double minVal; double maxVal; Point minLoc; Point maxLoc;
@@ -291,11 +310,11 @@ void depthmap::refine_depth(Mat& mask_depth,Mat& mask,vector<Rect> result,Mat& f
         {
                 int x_forward = 1.2*(int)maxVal;
                 Rect match_rect;
-                match_rect.x = r.x - x_forward;
-                if(match_rect.x < 0)
-                    continue;//on the side, ignore it
+                match_rect.x = r.x + flag*x_forward;
                 match_rect.y = r.y;
                 match_rect.width = r.width + x_forward;
+                if(match_rect.x < 0 || (match_rect.x + match_rect.width)>frame.cols)
+                    continue;//on the side, ignore it
                 match_rect.height = r.height;
                 Mat temp_area = frame2(match_rect);
                 int disp_stand = pattern_match(x_forward,temp,temp_area);
