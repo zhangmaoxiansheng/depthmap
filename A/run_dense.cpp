@@ -19,6 +19,7 @@ using namespace cv;
 using namespace cv::cuda;
 //input : ./run_DE_INT test2.avi test2b.avi
 //output: bgdepth bgimg 
+
 int main(int argc, char** argv)
 {
 	char *file = argv[1];//video input 1

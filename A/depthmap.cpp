@@ -38,6 +38,18 @@ depthmap::depthmap(int rpyrtypei,int nochannelsi,int incoltypei)
     verbosity = 0;
 
 }
+void depthmap::filp_forward(Mat& m)
+{
+    cv::transpose(m,m);
+    cv::flip(m,m,1);
+
+}
+void depthmap::filp_back(Mat& m)
+{
+    cv::transpose(m,m);
+    cv::flip(m,m,0);
+    
+}
 void depthmap::ConstructImgPyramide(const cv::Mat & img_ao_fmat, cv::Mat * img_ao_fmat_pyr, cv::Mat * img_ao_dx_fmat_pyr, cv::Mat * img_ao_dy_fmat_pyr, const float ** img_ao_pyr, const float ** img_ao_dx_pyr, const float ** img_ao_dy_pyr, const int lv_f, const int lv_l, const int rpyrtype, const bool getgrad, const int imgpadding, const int padw, const int padh)
 {
     for (int i=0; i<=lv_f; ++i)  // Construct image and gradient pyramides
@@ -264,7 +276,11 @@ Mat depthmap::update_depth(Mat& bg_depth,vector<Rect> result,Mat& frame,Mat& fra
 
 Mat depthmap::init_depth(Mat& input1,Mat& input2)
 {
-  
+  if(ifrotate)
+  {  
+    filp_forward(input1);
+    filp_forward(input2);
+  }
   cv::Mat img_ao_mat = input1; // Read the file
   cv::Mat img_bo_mat = input2;   // Read the file
   
@@ -371,5 +387,11 @@ Mat depthmap::init_depth(Mat& input1,Mat& input2)
   // If image was padded, remove padding before saving to file
   flowout = flowout(cv::Rect((int)floor((float)padw/2.0f),(int)floor((float)padh/2.0f),width_org,height_org));
   flowout = cv::abs(flowout);
+  if(ifrotate)
+  {
+    filp_back(flowout);
+    filp_back(input1);
+    filp_back(input2);
+  }
   return flowout;
 }
