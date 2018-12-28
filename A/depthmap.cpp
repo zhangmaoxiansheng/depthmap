@@ -231,7 +231,7 @@ Mat depthmap::get_depth(Mat& input1,Mat& input2)
   
   // If image was padded, remove padding before saving to file
   flowout = flowout(cv::Rect((int)floor((float)padw/2.0f),(int)floor((float)padh/2.0f),width_org,height_org));
-
+  flowout = cv::abs(flowout);
   return flowout;
 }
 
@@ -370,6 +370,6 @@ Mat depthmap::init_depth(Mat& input1,Mat& input2)
   
   // If image was padded, remove padding before saving to file
   flowout = flowout(cv::Rect((int)floor((float)padw/2.0f),(int)floor((float)padh/2.0f),width_org,height_org));
-
+  flowout = cv::abs(flowout);
   return flowout;
 }

@@ -42,6 +42,8 @@ int main(int argc, char** argv)
 	Mat frame2;
 	cap >> frame;
 	cap2 >> frame2;
+	cv::resize(frame,frame,Size(1000,750));
+	cv::resize(frame2,frame2,Size(1000,750));//resize first
 	GpuMat d_frame(frame);
 	GpuMat d_frame2(frame2);
 	Ptr<BackgroundSubtractor> mog = cuda::createBackgroundSubtractorMOG(300);
@@ -93,7 +95,7 @@ int main(int argc, char** argv)
 			break;
 		
 	}
-	bg_depth = dep.init_depth(bgimg,bgimg2);
+	bg_depth = dep.init_depth(bgimg,bgimg2);//abs
 	imshow("bg1",bgimg);
 	imshow("bg2",bgimg2);
 	cv::waitKey(0);
