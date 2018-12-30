@@ -6,9 +6,9 @@ class for depth map update
 */
 #ifndef _DEPTHMAP_H_
 #define _DEPTHMAP_H_
-#define disp_danger 35//the confindence of the disparity is low
-#define largest_diff 5
-#define update_thresh 15 //do not update, if the max disparity is smalller 
+#define disp_danger 10//the confindence of the disparity is low
+#define largest_diff 0
+#define update_thresh 0 //do not update, if the max disparity is smalller 
 
 #include <opencv2/opencv.hpp>
 #include "oflow.h"
@@ -63,7 +63,7 @@ private:
     @param cv::Mat& temp_area search area
 	@return int stantdard dispartiy
 	*/
-    int pattern_match(int x_forward,cv::Mat temp,cv::Mat temp_area);
+    int pattern_match(int x_forward,int flag,cv::Mat temp,cv::Mat temp_area);
     
 };
 

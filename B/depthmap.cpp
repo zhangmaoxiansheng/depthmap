@@ -263,7 +263,7 @@ Mat depthmap::init_depth(Mat init1,Mat init2)
 {
     return get_depth(init1,init2);
 }
-int depthmap::pattern_match(int x_forward,Mat temp,Mat temp_area)
+int depthmap::pattern_match(int x_forward,int flag,Mat temp,Mat temp_area)
 {
     //int x_forward = temp_area.cols - temp.cols;
     int disp_stand;
@@ -274,17 +274,21 @@ int depthmap::pattern_match(int x_forward,Mat temp,Mat temp_area)
 	Point matchLoc;
 	minMaxLoc(final_result, &minVal, &maxVal, &minLoc, &maxLoc);
 
-    disp_stand = x_forward - minLoc.x;
+    if(flag > 0)
+        disp_stand = x_forward - minLoc.x;
+    else
+        disp_stand = minLoc.x; 
     return disp_stand;
 }
 void depthmap::refine_depth(Mat& mask_depth,Mat& mask,vector<Rect> result,Mat& frame,Mat& frame2)
 {
-    int flag = 1;
+    int flag = 0;
     double min;double max;
     minMaxLoc(mask_depth,&min,&max);
+    //cout<<"min"<<min<<endl;
     if(min < 0)
-    {    
-        flag = -1;
+    {
+        flag = 1;
         mask_depth = cv::abs(mask_depth);
     }
     for(size_t i = 0;i < result.size();i++)
@@ -296,31 +300,41 @@ void depthmap::refine_depth(Mat& mask_depth,Mat& mask,vector<Rect> result,Mat& f
         Mat t_mask = mask(r);
         minMaxLoc(temp_depth,&minVal,&maxVal);
         Scalar mean_ = cv::mean(temp_depth,t_mask);
-        //cout<<maxVal<<endl;
-        //cout<<mean_[0]<<endl;
-        if(mean_[0] < update_thresh)//do not update and change the mask
+        
+        double mean_val = mean_[0];
+        //cout<<"mean_val"<<mean_val<<endl;
+        //cout<<"max"<<maxVal<<endl;
+
+        if(mean_val < update_thresh)//do not update and change the mask
         {
             cv::rectangle(mask_depth,r,Scalar(0,0,0),-1);
             cv::rectangle(mask,r,Scalar(0,0,0),-1);
         }    
 
-        else if(mean_[0] < disp_danger && (maxVal - mean_[0])>largest_diff)
+        else if(mean_val < disp_danger && (maxVal - mean_val)>largest_diff)
         {
-                int x_forward = 1.2*(int)maxVal;
+                //cout<<"refine"<<endl;
+                int x_forward = 1.2*(int)maxVal;///+
                 Rect match_rect;
-                match_rect.x = r.x + flag*x_forward;
+                match_rect.x = r.x - flag*x_forward;
                 match_rect.y = r.y;
                 match_rect.width = r.width + x_forward;
                 if(match_rect.x < 0 || (match_rect.x + match_rect.width)>frame.cols)
-                    continue;//on the side, ignore it
+                    {//cout<<"ignore"<<endl;
+                    continue;}//on the side, ignore it
                 match_rect.height = r.height;
                 Mat temp_area = frame2(match_rect);
-                int disp_stand = pattern_match(x_forward,temp,temp_area);
+                int disp_stand = pattern_match(x_forward,flag,temp,temp_area);
+                //cout<<"disp standard"<<disp_stand<<endl;
                 for(int i = r.y ;i < r.y + r.height;i++)
                     for(int j = r.x; j < r.x + r.width;j++)
                         if(mask_depth.at<float>(i,j)> 0 && (mask_depth.at<float>(i,j) > 1.2*disp_stand || mask_depth.at<float>(i,j) < 0.8*disp_stand))
                             mask_depth.at<float>(i,j) = disp_stand;
+                
         }
         
     }
+    //minMaxLoc(mask_depth,&min,&max);
+    //cout<<"final min"<<min<<endl;
+    //cout<<"final max"<<max<<endl;
 }
