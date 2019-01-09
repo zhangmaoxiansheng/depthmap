@@ -129,11 +129,20 @@ Rect GhostElemer::Rect_Join(Rect r1, Rect r2)
 }
 vector<Rect> GhostElemer::Find_location(Mat& img,Mat &frame,Mat &frame2)
 {
-	if(img.cols>img.rows&&rotate_flag==1)
+	if(img.cols>img.rows)
 	{
-		rotate_(img);
-		rotate_(frame);
-		rotate_(frame2);
+		if(flag == 1)
+		{
+			rotate_(img);
+			rotate_(frame);
+			rotate_(frame2);
+		}
+		else
+		{
+			rotate_back(img);
+			rotate_back(frame);
+			rotate_back(frame2);
+		}
 	}
 	vector<Rect> res_c;
 	vector<vector<Point> > contours;
@@ -238,12 +247,28 @@ void GhostElemer::rotate_back(Mat& m)
 cv::Mat GhostElemer::init_frame(Mat frame)
 {
 	Mat frame1 = frame.clone();
-	if(frame.cols>frame.rows && rotate_flag==1)
-		rotate_(frame1);
+	if(frame.cols>frame.rows)
+	{
+		if(flag == 1)
+			rotate_(frame1);
+		else
+			rotate_back(frame1);
+	}
 	return frame1;
 }
 void GhostElemer::res_out(Mat& mask,Mat& depth_mask)
 {
-	if(mask.cols < mask.rows && rotate_flag==1)
-	{rotate_back(mask);rotate_back(depth_mask);}
+	if(mask.cols < mask.rows)
+	{
+		if(flag == 1)
+		{
+			rotate_back(mask);
+			rotate_back(depth_mask);
+		}
+		else
+		{
+			rotate_(mask);
+			rotate_(depth_mask);
+		}
+	}
 }

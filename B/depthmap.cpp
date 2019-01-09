@@ -38,16 +38,21 @@ depthmap::depthmap(int rpyrtypei,int nochannelsi,int incoltypei)
     verbosity = 0;
 
 }
-void depthmap::rotate_(Mat& m)
+Mat depthmap::rotate_(Mat m)
 {
-    cv::transpose(m,m);
-    cv::flip(m,m,1);
-
+    Mat m1;
+    Mat m2;
+    cv::transpose(m,m1);
+    cv::flip(m1,m2,1);
+    return m2; 
 }
-void depthmap::rotate_back(Mat& m)
+Mat depthmap::rotate_back(Mat m)
 {
-    cv::transpose(m,m);
-    cv::flip(m,m,0);
+    Mat m1;
+    Mat m2;
+    cv::transpose(m,m1);
+    cv::flip(m1,m2,0);
+    return m2;
     
 }
 void depthmap::ConstructImgPyramide(const cv::Mat & img_ao_fmat, cv::Mat * img_ao_fmat_pyr, cv::Mat * img_ao_dx_fmat_pyr, cv::Mat * img_ao_dy_fmat_pyr, const float ** img_ao_pyr, const float ** img_ao_dx_pyr, const float ** img_ao_dy_pyr, const int lv_f, const int lv_l, const int rpyrtype, const bool getgrad, const int imgpadding, const int padw, const int padh)
@@ -259,9 +264,29 @@ Mat depthmap::update_depth_robust(Mat& depth_map,Mat mask) //robust version
     return depth_mask;
 }
 
-Mat depthmap::init_depth(Mat init1,Mat init2)
+Mat depthmap::init_depth(Mat init1,Mat init2,int &flag)
 {
-    return get_depth(init1,init2);
+    Mat init_1_1 = rotate_(init1);
+    Mat init_1_2 = rotate_(init2);
+    Mat depth1 = get_depth(init_1_1,init_1_2);
+
+    Mat init_2_1 = rotate_back(init1);
+    Mat init_2_2 = rotate_back(init2);
+    Mat depth2 = get_depth(init_2_1,init_2_2);
+    Mat right_depth;
+    Scalar mean1 = cv::mean(depth1);
+    Scalar mean2 = cv::mean(depth2);
+    if(abs(mean1[0]) > abs(mean2[0]))
+    {
+        flag = 1;
+        right_depth =  depth1;
+    }
+    else
+    {
+        flag = 0;
+        right_depth = depth2;
+    }
+    return right_depth;
 }
 int depthmap::pattern_match(int x_forward,int flag,Mat temp,Mat temp_area)
 {
